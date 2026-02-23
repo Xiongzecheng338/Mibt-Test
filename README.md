@@ -368,7 +368,8 @@ copies or substantial portions of the Software.
 | 平台 | 链接 |
 |------|------|
 | GitHub | [提交 Issue](https://github.com/badhope/deep-personality-explorer/issues) |
-| Email | your.email@example.com |
+
+| Email | x18825407105.outlook.com |
 
 ---
 
