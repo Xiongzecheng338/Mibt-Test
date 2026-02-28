@@ -1,0 +1,19 @@
+{
+  "name": "人格星球探索 - 深度心理测评",
+  "short_name": "人格探索",
+  "description": "一个有趣的深度人格测试工具，包含闪电模式、标准模式和专家模式，帮助你发现未知的自己。",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#8b5cf6",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["entertainment", "lifestyle"],
+  "lang": "zh-CN"
+}
