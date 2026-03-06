@@ -1,7 +1,6 @@
 class BackgroundManager {
     constructor(options = {}) {
         this.container = options.container;
-        this.currentUser = null;
         this.backgrounds = { presets: [], custom: [] };
         this.selectedBackground = null;
         this.onSelect = options.onSelect || (() => {});
@@ -10,20 +9,20 @@ class BackgroundManager {
     }
     
     async init() {
-        this.currentUser = window.authService?.getCurrentUser();
         await this.loadBackgrounds();
         this.render();
     }
     
     async loadBackgrounds() {
         try {
-            const response = await window.backgroundsAPI.list();
-            if (response.success) {
-                this.backgrounds = response.data;
-                
-                if (this.currentUser?.settings?.customBackground) {
-                    this.selectedBackground = this.currentUser.settings.customBackground;
-                }
+            const saved = localStorage.getItem('backgrounds');
+            if (saved) {
+                this.backgrounds = JSON.parse(saved);
+            }
+            
+            const selected = localStorage.getItem('selectedBackground');
+            if (selected) {
+                this.selectedBackground = selected;
             }
         } catch (error) {
             console.error('Load backgrounds error:', error);
@@ -50,29 +49,20 @@ class BackgroundManager {
                     </div>
                 </div>
                 
-                ${this.currentUser ? `
-                    <div class="bg-section mb-6">
-                        <h4 class="text-lg font-medium mb-3 flex items-center gap-2">
-                            <span class="text-cyan-400">⬆️</span> 自定义背景
-                        </h4>
-                        <div class="upload-area glass-card rounded-xl p-6 text-center cursor-pointer hover:bg-white/5 transition-all" id="upload-area">
-                            <input type="file" id="bg-file-input" accept="image/*" class="hidden">
-                            <div class="text-4xl mb-2">📁</div>
-                            <p class="text-gray-400">点击或拖拽图片到此处上传</p>
-                            <p class="text-xs text-gray-500 mt-1">支持 JPG、PNG、WebP，最大 5MB</p>
-                        </div>
-                        <div class="custom-bg-grid grid grid-cols-2 md:grid-cols-3 gap-4 mt-4" id="custom-bg-grid">
-                            ${this.backgrounds.custom.map(bg => this.renderBackgroundItem(bg, true)).join('')}
-                        </div>
+                <div class="bg-section mb-6">
+                    <h4 class="text-lg font-medium mb-3 flex items-center gap-2">
+                        <span class="text-cyan-400">⬆️</span> 自定义背景
+                    </h4>
+                    <div class="upload-area glass-card rounded-xl p-6 text-center cursor-pointer hover:bg-white/5 transition-all" id="upload-area">
+                        <input type="file" id="bg-file-input" accept="image/*" class="hidden">
+                        <div class="text-4xl mb-2">📁</div>
+                        <p class="text-gray-400">点击或拖拽图片到此处上传</p>
+                        <p class="text-xs text-gray-500 mt-1">支持 JPG、PNG、WebP，最大 5MB</p>
                     </div>
-                ` : `
-                    <div class="text-center py-6 glass-card rounded-xl">
-                        <p class="text-gray-400 mb-3">登录后可上传自定义背景</p>
-                        <a href="auth.html" class="inline-block px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white font-medium hover:opacity-90 transition-all">
-                            立即登录
-                        </a>
+                    <div class="custom-bg-grid grid grid-cols-2 md:grid-cols-3 gap-4 mt-4" id="custom-bg-grid">
+                        ${this.backgrounds.custom.map(bg => this.renderBackgroundItem(bg, true)).join('')}
                     </div>
-                `}
+                </div>
                 
                 <div class="flex justify-end gap-3 mt-6">
                     <button id="reset-bg-btn" class="px-6 py-2 glass-card rounded-lg hover:bg-white/10 transition-all">
@@ -202,17 +192,17 @@ class BackgroundManager {
         const reader = new FileReader();
         reader.onload = async (e) => {
             try {
-                const response = await window.backgroundsAPI.upload({
+                const newBg = {
+                    id: 'bg_' + Date.now(),
                     name: file.name,
                     url: e.target.result,
                     thumbnail: e.target.result
-                });
+                };
                 
-                if (response.success) {
-                    this.backgrounds.custom.push(response.data);
-                    this.render();
-                    this.showToast('上传成功', 'success');
-                }
+                this.backgrounds.custom.push(newBg);
+                this.saveBackgrounds();
+                this.render();
+                this.showToast('上传成功', 'success');
             } catch (error) {
                 this.showToast('上传失败', 'error');
             }
@@ -224,19 +214,17 @@ class BackgroundManager {
     async deleteBackground(id) {
         if (!confirm('确定要删除这个背景吗？')) return;
         
-        try {
-            const response = await window.backgroundsAPI.delete(id);
-            if (response.success) {
-                this.backgrounds.custom = this.backgrounds.custom.filter(b => b.id !== id);
-                if (this.selectedBackground === id) {
-                    this.selectedBackground = null;
-                }
-                this.render();
-                this.showToast('删除成功', 'success');
-            }
-        } catch (error) {
-            this.showToast('删除失败', 'error');
+        this.backgrounds.custom = this.backgrounds.custom.filter(b => b.id !== id);
+        if (this.selectedBackground === id) {
+            this.selectedBackground = null;
         }
+        this.saveBackgrounds();
+        this.render();
+        this.showToast('删除成功', 'success');
+    }
+    
+    saveBackgrounds() {
+        localStorage.setItem('backgrounds', JSON.stringify(this.backgrounds));
     }
     
     async saveBackground() {
@@ -245,18 +233,13 @@ class BackgroundManager {
             return;
         }
         
-        try {
-            const response = await window.backgroundsAPI.setDefault(this.selectedBackground);
-            if (response.success) {
-                this.showToast('背景设置已保存', 'success');
-            }
-        } catch (error) {
-            this.showToast('保存失败', 'error');
-        }
+        localStorage.setItem('selectedBackground', this.selectedBackground);
+        this.showToast('背景设置已保存', 'success');
     }
     
     resetBackground() {
         this.selectedBackground = null;
+        localStorage.removeItem('selectedBackground');
         this.render();
         this.onSelect(null);
     }

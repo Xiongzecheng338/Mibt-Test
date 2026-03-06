@@ -4,112 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- 核心标题 -->
     <title>人格星球探索 | 深度心理测评与职业倾向分析</title>
     
-    <!-- SEO 优化标签 -->
     <meta name="description" content="人格星球探索是一个专业且有趣的人格测试网站。提供闪电模式(5分钟)、标准模式(15分钟)和专家模式(30分钟)三种深度测评，帮助你了解性格、职业倾向和潜能。">
     <meta name="keywords" content="人格测试,心理测试,MBTI,性格分析,职业测试,人格星球,心理测评,自我探索">
     <meta name="author" content="BadHope">
     
-    <!-- Open Graph (社交媒体分享时显示的标题和图片) -->
     <meta property="og:title" content="人格星球探索 - 发现你的隐藏属性">
     <meta property="og:description" content="探索内心宇宙，发现未知的自己。专业心理测评，趣味性格分析。">
     <meta property="og:image" content="https://badhope.github.io/Mibt-Test/favicon.svg">
     <meta property="og:url" content="https://badhope.github.io/Mibt-Test/">
     <meta property="og:type" content="website">
     
-    <!-- 网站图标 (Favicon) -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="apple-touch-icon" href="favicon.svg">
     
-    <!-- PWA 配置 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0a0a0f">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Animate.css -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     
-    <!-- 自定义样式 -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-
 <body class="min-h-screen">
-    <!-- 动态背景 -->
     <div class="animated-bg"></div>
     
-    <!-- 粒子背景 -->
     <div id="particles-js"></div>
     
-    <!-- 浮动装饰 -->
     <div class="floating-decoration" style="top: 10%; left: 5%;">🧠</div>
     <div class="floating-decoration" style="top: 30%; right: 10%; animation-delay: -2s;">✨</div>
     <div class="floating-decoration" style="top: 60%; left: 15%; animation-delay: -4s;">🎭</div>
     <div class="floating-decoration" style="top: 80%; right: 5%; animation-delay: -6s;">🌟</div>
     
-    <!-- 用户状态栏 -->
-    <div id="user-status-bar" class="fixed top-4 right-4 z-50 flex items-center gap-3">
-        <div id="user-info" class="hidden items-center gap-3 glass-card rounded-full px-4 py-2">
-            <img id="user-avatar-small" src="" alt="avatar" class="w-8 h-8 rounded-full">
-            <span id="user-name-small" class="text-sm font-medium"></span>
-            <a href="profile.html" class="text-gray-400 hover:text-white transition-colors" title="个人中心">
-                <i class="fas fa-user-cog"></i>
-            </a>
-            <button id="logout-btn" onclick="handleLogout()" class="text-gray-400 hover:text-red-400 transition-colors" title="退出登录">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        </div>
-        <div id="auth-buttons" class="flex items-center gap-2">
-            <a id="register-btn" href="auth.html#register" class="glass-card rounded-full px-5 py-2 hover:bg-white/10 transition-all flex items-center gap-2 border border-purple-500/30">
-                <i class="fas fa-user-plus"></i>
-                <span>注册</span>
-            </a>
-            <a id="login-btn" href="auth.html#login" class="glass-card rounded-full px-5 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/40 hover:to-pink-500/40 transition-all flex items-center gap-2">
-                <i class="fas fa-sign-in-alt"></i>
-                <span>登录</span>
-            </a>
+    <div id="guest-status-bar" class="fixed top-4 right-4 z-50 flex items-center gap-3">
+        <div id="guest-info" class="flex items-center gap-3 glass-card rounded-full px-4 py-2 cursor-pointer hover:bg-white/10 transition-all" onclick="openGuestSettings()">
+            <img id="guest-avatar" src="" alt="avatar" class="w-8 h-8 rounded-full">
+            <span id="guest-name" class="text-sm font-medium"></span>
+            <i class="fas fa-cog text-gray-400 hover:text-purple-400 transition-colors"></i>
         </div>
     </div>
     
-    <!-- 主容器 -->
     <div id="app" class="relative z-10 container mx-auto px-4 py-8 min-h-screen flex flex-col">
         
-        <!-- ========== 首页 ========== -->
         <div id="home-page" class="flex-1 flex flex-col items-center justify-center">
             
-            <!-- 顶部标题 -->
             <div class="text-center mb-12 animate__animated animate__fadeInDown">
                 <div class="mb-6 relative inline-block">
                     <div class="text-6xl mb-4 emoji-float">🚀</div>
                     <div class="absolute -top-2 -right-2 text-2xl animate__animated animate__bounce animate__infinite">✨</div>
                 </div>
                 
-                <!-- 增加闪烁标题特效 -->
                 <h1 class="text-4xl md:text-6xl font-display font-bold mb-4 shining-title">
                     人格星球探索
                 </h1>
                 
-                <!-- 副标题增加风格 -->
                 <p class="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-8 styled-subtitle">
                     欢迎来到人格测试宇宙！
                     <span class="emoji-float">🌟</span> 发现隐藏在你内心的独特属性
                     <span class="emoji-float">🎯</span>
                 </p>
                 
-                <!-- 统计 -->
                 <div class="flex justify-center gap-8 mb-8 text-center">
                     <div class="glass-card rounded-xl px-6 py-3">
-                        <div class="text-2xl font-bold text-purple-400">12,589</div>
+                        <div class="text-2xl font-bold text-purple-400" id="total-explorers">12,589</div>
                         <div class="text-xs text-gray-500">探索者</div>
                     </div>
                     <div class="glass-card rounded-xl px-6 py-3">
@@ -123,7 +87,6 @@
                 </div>
             </div>
             
-            <!-- 断点续传提示 -->
             <div id="resume-card" class="hidden glass-card rounded-2xl p-4 mb-8 max-w-2xl w-full animate__animated animate__fadeIn border-yellow-500/50">
                 <div class="flex items-center gap-4">
                     <span class="text-4xl">⏳</span>
@@ -136,10 +99,8 @@
                 </div>
             </div>
             
-            <!-- 测试模式 -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl w-full mb-12">
                 
-                <!-- 闪电模式 -->
                 <div class="glass-card rounded-2xl p-6 neon-border cursor-pointer transform hover:scale-105 transition-all duration-300 group animate__animated animate__fadeInLeft" onclick="startTest('quick')">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-4xl">⚡</span>
@@ -152,10 +113,9 @@
                         <span>🎯 5维度</span>
                         <span>⚡ 极速</span>
                     </div>
-                    <button onclick="alert('开始探索按钮点击成功！'); console.log('开始探索按钮点击成功');" class="w-full py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/40 hover:to-emerald-500/40 rounded-xl text-green-300 font-bold transition-all">开始探索 <i class="fas fa-bolt ml-2"></i></button>
+                    <button class="w-full py-3 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/40 hover:to-emerald-500/40 rounded-xl text-green-300 font-bold transition-all">开始探索 <i class="fas fa-bolt ml-2"></i></button>
                 </div>
                 
-                <!-- 标准模式 -->
                 <div class="glass-card rounded-2xl p-6 neon-border cursor-pointer transform hover:scale-105 transition-all duration-300 group animate__animated animate__fadeInUp animate__delay-1s border-purple-500/30" onclick="startTest('standard')">
                     <div class="absolute -top-2 -right-2">
                         <span class="text-2xl animate__animated animate__bounce animate__infinite">🔥</span>
@@ -174,7 +134,6 @@
                     <button class="w-full py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/40 hover:to-pink-500/40 rounded-xl text-purple-300 font-bold transition-all">深入探索 <i class="fas fa-rocket ml-2"></i></button>
                 </div>
                 
-                <!-- 专家模式 -->
                 <div class="glass-card rounded-2xl p-6 neon-border cursor-pointer transform hover:scale-105 transition-all duration-300 group animate__animated animate__fadeInRight animate__delay-2s" onclick="startTest('expert')">
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-4xl">🧠</span>
@@ -191,7 +150,6 @@
                 </div>
             </div>
             
-            <!-- 趣味测试 -->
             <div class="max-w-4xl w-full mb-8 animate__animated animate__fadeInUp animate__delay-3s">
                 <div class="glass-card rounded-2xl p-6">
                     <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -222,7 +180,6 @@
                 </div>
             </div>
             
-            <!-- 今日运势和抽签 -->
             <div class="max-w-4xl w-full mb-8 animate__animated animate__fadeInUp animate__delay-3s">
                 <div class="glass-card rounded-2xl p-6">
                     <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -253,7 +210,6 @@
                 </div>
             </div>
             
-            <!-- 社区功能 -->
             <div class="max-w-4xl w-full mb-8 animate__animated animate__fadeInUp animate__delay-4s">
                 <div class="glass-card rounded-2xl p-6">
                     <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
@@ -281,9 +237,7 @@
             </div>
         </div>
         
-        <!-- ========== 测试页面 ========== -->
         <div id="test-page" class="hidden flex-1 flex flex-col max-w-3xl mx-auto w-full">
-            <!-- 顶部导航 -->
             <div class="flex justify-between items-center mb-6">
                 <button onclick="confirmSaveAndExit()" class="glass-card px-4 py-2 rounded-xl hover:bg-white/10 transition-all flex items-center gap-2">
                     <i class="fas fa-save"></i>
@@ -296,7 +250,6 @@
                 </button>
             </div>
             
-            <!-- 题目导航面板 -->
             <div id="question-nav-panel" class="hidden glass-card rounded-2xl p-4 mb-4 animate__animated animate__fadeInDown">
                 <div class="flex justify-between items-center mb-3">
                     <h4 class="font-bold text-sm">题目导航</h4>
@@ -307,37 +260,29 @@
                     </div>
                 </div>
                 <div id="question-nav-grid" class="grid grid-cols-10 gap-2">
-                    <!-- 题目导航按钮将通过JS动态生成 -->
                 </div>
             </div>
             
-            <!-- 进度条 -->
             <div class="w-full bg-gray-800/50 rounded-full h-2 mb-8 overflow-hidden">
                 <div id="progress-bar" class="progress-bar h-full rounded-full" style="width: 0%"></div>
             </div>
             
-            <!-- 答题进度统计 -->
             <div id="answer-progress" class="flex justify-between items-center mb-4 text-sm">
                 <span class="text-gray-400">已答: <span id="answered-count" class="text-green-400 font-bold">0</span> / <span id="total-count">24</span></span>
                 <span class="text-gray-400">未答: <span id="unanswered-count" class="text-yellow-400 font-bold">24</span></span>
             </div>
             
-            <!-- 题目容器 -->
             <div id="question-container" class="glass-card rounded-3xl p-8 mb-8 flex-1">
-                <!-- 维度标签 -->
                 <div class="flex items-center gap-2 mb-4 text-purple-400">
                     <span id="dimension-icon" class="text-2xl">📊</span>
                     <span id="dimension-label" class="text-sm font-bold">维度名称</span>
                 </div>
                 
-                <!-- 题目 -->
                 <h2 id="question-text" class="text-xl md:text-2xl font-bold mb-8 leading-relaxed">题目加载中...</h2>
                 
-                <!-- 选项 -->
                 <div id="options-container" class="space-y-4"></div>
             </div>
             
-            <!-- 底部导航 -->
             <div class="flex justify-between items-center">
                 <button id="prev-btn" onclick="prevQuestion()" class="glass-card px-6 py-3 rounded-xl hover:bg-white/10 transition-all disabled:opacity-30">
                     <i class="fas fa-arrow-left mr-2"></i> 上一题
@@ -353,10 +298,8 @@
             </div>
         </div>
         
-        <!-- ========== 结果页面 ========== -->
         <div id="result-page" class="hidden flex-1 max-w-4xl mx-auto w-full pb-16"></div>
         
-        <!-- ========== 趣味测试页面 ========== -->
         <div id="mini-test-page" class="hidden flex-1 max-w-2xl mx-auto w-full">
             <div class="glass-card rounded-3xl p-8 mb-6">
                 <h2 id="mini-test-title" class="text-2xl font-bold mb-6 text-center"></h2>
@@ -367,7 +310,6 @@
             </button>
         </div>
         
-        <!-- ========== 控制面板页面 ========== -->
         <div id="control-panel-page" class="hidden flex-1 max-w-3xl mx-auto w-full">
             <div class="text-center mb-8 animate__animated animate__fadeInDown">
                 <h1 class="text-3xl md:text-4xl font-bold mb-4 shining-title">控制面板</h1>
@@ -376,10 +318,57 @@
             
             <div class="glass-card rounded-2xl p-6 mb-6 animate__animated animate__fadeIn">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-user-circle text-purple-400"></i> 访客身份
+                </h3>
+                <div class="flex items-center gap-4 mb-4">
+                    <img id="panel-guest-avatar" src="" alt="avatar" class="w-16 h-16 rounded-full border-2 border-purple-500/50">
+                    <div class="flex-1">
+                        <input type="text" id="panel-guest-name" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:border-purple-500 focus:outline-none transition-all" placeholder="输入你的昵称">
+                        <p class="text-xs text-gray-500 mt-1">昵称将用于评论和留言板显示</p>
+                    </div>
+                </div>
+                <button onclick="saveGuestInfo()" class="w-full py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/40 hover:to-pink-500/40 rounded-xl text-purple-300 font-bold transition-all">
+                    <i class="fas fa-save mr-2"></i> 保存设置
+                </button>
+            </div>
+            
+            <div class="glass-card rounded-2xl p-6 mb-6 animate__animated animate__fadeIn">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
                     <i class="fas fa-cog text-purple-400"></i> 系统设置
                 </h3>
                 <div class="space-y-4" id="settings-container">
-                    <!-- 设置项将通过JS动态生成 -->
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                        <div>
+                            <h4 class="font-bold">深色模式</h4>
+                            <p class="text-sm text-gray-400">使用深色主题</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="dark-mode-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                        <div>
+                            <h4 class="font-bold">动画效果</h4>
+                            <p class="text-sm text-gray-400">启用页面动画</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="animations-toggle" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                        <div>
+                            <h4 class="font-bold">音效</h4>
+                            <p class="text-sm text-gray-400">启用交互音效</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="sound-toggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-500"></div>
+                        </label>
+                    </div>
                 </div>
             </div>
             
@@ -388,7 +377,10 @@
                     <i class="fas fa-history text-blue-400"></i> 测试历史
                 </h3>
                 <div id="history-container" class="space-y-4">
-                    <!-- 历史记录将通过JS动态生成 -->
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                        <p>加载中...</p>
+                    </div>
                 </div>
             </div>
             
@@ -415,7 +407,6 @@
                     <i class="fas fa-info-circle text-yellow-400"></i> 存储信息
                 </h3>
                 <div id="storage-info" class="space-y-2">
-                    <!-- 存储信息将通过JS动态生成 -->
                 </div>
             </div>
             
@@ -427,7 +418,6 @@
         </div>
     </div>
 
-    <!-- ========== 右下角点赞提示 (新增加) ========== -->
     <div class="github-corner">
         <a href="https://github.com/badhope?tab=repositories" target="_blank" class="github-link">
             <i class="fab fa-github"></i>
@@ -435,16 +425,36 @@
         </a>
     </div>
 
-    <!-- 引入外部库 -->
+    <div id="guest-settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        <div class="glass-card rounded-2xl p-6 max-w-md w-full mx-4 animate__animated animate__fadeInDown">
+            <h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-user-edit text-purple-400"></i> 设置你的身份
+            </h3>
+            <div class="flex items-center gap-4 mb-4">
+                <img id="modal-guest-avatar" src="" alt="avatar" class="w-16 h-16 rounded-full border-2 border-purple-500/50">
+                <div class="flex-1">
+                    <input type="text" id="modal-guest-name" class="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-xl focus:border-purple-500 focus:outline-none transition-all" placeholder="输入你的昵称">
+                    <p class="text-xs text-gray-500 mt-1">昵称将用于评论和留言板显示</p>
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="closeGuestSettings()" class="flex-1 py-3 glass-card rounded-xl hover:bg-white/10 transition-all">
+                    取消
+                </button>
+                <button onclick="saveGuestInfoFromModal()" class="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl font-bold hover:opacity-90 transition-all">
+                    保存
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" defer></script>
     
-    <!-- 引入核心逻辑 -->
     <script src="js/data.js"></script>
     <script src="js/storage.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/guest.js"></script>
     <script src="js/comments.js"></script>
     <script src="js/messages.js"></script>
     <script src="js/background.js"></script>
@@ -453,53 +463,182 @@
     <script src="js/core.js"></script>
     <script src="js/main.js"></script>
     
-    <!-- 初始化用户状态 -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
-            await initUserStatus();
+            initGuestSystem();
+            initSettings();
+            loadTestHistoryInPanel();
+            loadStorageInfo();
         });
         
-        async function initUserStatus() {
-            const userInfo = document.getElementById('user-info');
-            const authButtons = document.getElementById('auth-buttons');
-            const loginBtn = document.getElementById('login-btn');
-            const registerBtn = document.getElementById('register-btn');
+        function initGuestSystem() {
+            const guest = window.guestSystem.getGuestInfo();
             
-            const user = window.authService?.getUserData();
+            document.getElementById('guest-avatar').src = guest.avatar;
+            document.getElementById('guest-name').textContent = guest.nickname;
             
-            if (user && user.id) {
-                userInfo.classList.remove('hidden');
-                userInfo.classList.add('flex');
-                if (authButtons) authButtons.classList.add('hidden');
-                
-                document.getElementById('user-avatar-small').src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.id}`;
-                document.getElementById('user-name-small').textContent = user.username || '探索者';
-            } else {
-                userInfo.classList.add('hidden');
-                userInfo.classList.remove('flex');
-                if (authButtons) authButtons.classList.remove('hidden');
+            if (document.getElementById('panel-guest-avatar')) {
+                document.getElementById('panel-guest-avatar').src = guest.avatar;
+                document.getElementById('panel-guest-name').value = guest.nickname;
             }
         }
         
-        async function handleLogout() {
-            if (window.authService) {
-                await window.authService.logout();
+        function openGuestSettings() {
+            const guest = window.guestSystem.getGuestInfo();
+            document.getElementById('modal-guest-avatar').src = guest.avatar;
+            document.getElementById('modal-guest-name').value = guest.nickname;
+            document.getElementById('guest-settings-modal').classList.remove('hidden');
+        }
+        
+        function closeGuestSettings() {
+            document.getElementById('guest-settings-modal').classList.add('hidden');
+        }
+        
+        function saveGuestInfoFromModal() {
+            const nickname = document.getElementById('modal-guest-name').value.trim();
+            if (nickname) {
+                window.guestSystem.updateGuestInfo({ nickname });
+                initGuestSystem();
+                closeGuestSettings();
+                showToast('设置已保存', 'success');
             }
-            localStorage.removeItem('auth_token');
-            localStorage.removeItem('user_data');
+        }
+        
+        function saveGuestInfo() {
+            const nickname = document.getElementById('panel-guest-name').value.trim();
+            if (nickname) {
+                window.guestSystem.updateGuestInfo({ nickname });
+                initGuestSystem();
+                showToast('设置已保存', 'success');
+            }
+        }
+        
+        function initSettings() {
+            const settings = window.loadSettings ? window.loadSettings() : {};
             
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+            const animationsToggle = document.getElementById('animations-toggle');
+            const soundToggle = document.getElementById('sound-toggle');
+            
+            if (darkModeToggle && settings.darkMode !== undefined) {
+                darkModeToggle.checked = settings.darkMode;
+            }
+            if (animationsToggle && settings.animationEnabled !== undefined) {
+                animationsToggle.checked = settings.animationEnabled;
+            }
+            if (soundToggle && settings.soundEnabled !== undefined) {
+                soundToggle.checked = settings.soundEnabled;
+            }
+            
+            [darkModeToggle, animationsToggle, soundToggle].forEach(toggle => {
+                if (toggle) {
+                    toggle.addEventListener('change', () => {
+                        const newSettings = {
+                            darkMode: darkModeToggle?.checked ?? true,
+                            animationEnabled: animationsToggle?.checked ?? true,
+                            soundEnabled: soundToggle?.checked ?? false
+                        };
+                        if (window.saveSettings) {
+                            window.saveSettings(newSettings);
+                        }
+                    });
+                }
+            });
+        }
+        
+        function loadTestHistoryInPanel() {
+            const container = document.getElementById('history-container');
+            if (!container) return;
+            
+            const history = window.loadTestHistory ? window.loadTestHistory() : [];
+            
+            if (history.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-400">
+                        <div class="text-4xl mb-3">📋</div>
+                        <p>暂无测试历史</p>
+                        <button onclick="backToHome()" class="inline-block mt-4 px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white font-medium hover:opacity-90 transition-all">
+                            开始测试
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = history.map(entry => {
+                const date = new Date(entry.timestamp);
+                return `
+                    <div class="p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-bold">${entry.mode === 'quick' ? '⚡ 闪电模式' : entry.mode === 'standard' ? '🚀 标准模式' : '🧠 专家模式'}</h4>
+                            <span class="text-sm text-gray-400">${date.toLocaleString()}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-3">
+                            ${entry.topDimensions.map(dim => `
+                                <div class="text-center p-3 bg-white/5 rounded-lg">
+                                    <div class="text-2xl mb-1">${dim.icon}</div>
+                                    <div class="text-xs font-bold">${dim.name}</div>
+                                    <div class="text-sm text-purple-400">${dim.score}%</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function loadStorageInfo() {
+            const container = document.getElementById('storage-info');
+            if (!container || !window.getStorageUsage) return;
+            
+            const usage = window.getStorageUsage();
+            if (usage) {
+                container.innerHTML = `
+                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                        <span class="text-gray-400">已使用</span>
+                        <span class="font-bold text-purple-400">${(usage.used / 1024).toFixed(2)} KB</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                        <span class="text-gray-400">总容量</span>
+                        <span class="font-bold text-cyan-400">${(usage.total / 1024 / 1024).toFixed(2)} MB</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                        <span class="text-gray-400">使用率</span>
+                        <span class="font-bold text-green-400">${usage.percentage.toFixed(2)}%</span>
+                    </div>
+                `;
+            }
+        }
+        
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = 'fixed top-4 right-4 bg-green-500/90 text-white px-6 py-3 rounded-xl shadow-lg z-50 animate__animated animate__fadeInRight';
-            toast.innerHTML = '<i class="fas fa-check-circle mr-2"></i> 已退出登录';
+            toast.className = `fixed top-4 right-4 px-6 py-3 rounded-xl shadow-lg z-50 animate__animated animate__fadeInRight ${
+                type === 'success' ? 'bg-green-500/90' : 'bg-red-500/90'
+            } text-white`;
+            toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle mr-2"></i>${message}`;
             document.body.appendChild(toast);
             
             setTimeout(() => {
-                window.location.reload();
-            }, 1000);
+                toast.classList.remove('animate__fadeInRight');
+                toast.classList.add('animate__fadeOutRight');
+                setTimeout(() => toast.remove(), 500);
+            }, 2000);
+        }
+        
+        function clearAllUserData() {
+            if (confirm('确定要清除所有数据吗？此操作不可恢复！')) {
+                if (window.clearAllData) {
+                    window.clearAllData();
+                }
+                localStorage.removeItem('guest_info');
+                showToast('数据已清除', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
         }
     </script>
     
-    <!-- 注册Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {

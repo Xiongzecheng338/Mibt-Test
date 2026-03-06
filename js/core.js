@@ -614,11 +614,6 @@ function initCommentsSection() {
 }
 
 function showExportDialog() {
-    if (!window.authService?.isAuthenticated()) {
-        window.permissionService?.showAuthRequired('导出功能需要登录');
-        return;
-    }
-    
     const exportManager = new window.ExportManager({
         testId: `test-${currentTestMode}-${Date.now()}`,
         testData: {

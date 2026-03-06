@@ -5,56 +5,59 @@ class ExportManager {
     }
     
     async exportJSON() {
-        if (!window.authService?.isAuthenticated()) {
-            window.permissionService?.showAuthRequired('导出功能需要登录');
-            return;
-        }
-        
         try {
-            const response = await window.exportAPI.generateJSON(this.testId);
-            if (response.success) {
-                const dataStr = JSON.stringify(response.data, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `mbti-test-result-${new Date().toISOString().slice(0, 10)}.json`;
-                link.click();
-                
-                URL.revokeObjectURL(url);
-                this.showToast('导出成功', 'success');
-            }
+            const dataStr = JSON.stringify(this.testData || {}, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `mbti-test-result-${new Date().toISOString().slice(0, 10)}.json`;
+            link.click();
+            
+            URL.revokeObjectURL(url);
+            this.showToast('导出成功', 'success');
         } catch (error) {
+            console.error('导出失败:', error);
             this.showToast('导出失败', 'error');
         }
     }
     
     async exportPDF() {
-        if (!window.authService?.isAuthenticated()) {
-            window.permissionService?.showAuthRequired('导出功能需要登录');
-            return;
-        }
-        
         try {
-            const response = await window.exportAPI.generatePDF(this.testId);
-            if (response.success) {
-                const report = response.data;
-                const pdfContent = this.generatePDFContent(report);
-                
-                const printWindow = window.open('', '_blank');
-                printWindow.document.write(pdfContent);
-                printWindow.document.close();
-                
-                setTimeout(() => {
-                    printWindow.print();
-                }, 500);
-                
-                this.showToast('正在生成PDF...', 'success');
-            }
+            const report = this.generateReportData();
+            const pdfContent = this.generatePDFContent(report);
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(pdfContent);
+            printWindow.document.close();
+            
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+            
+            this.showToast('正在生成PDF...', 'success');
         } catch (error) {
+            console.error('导出失败:', error);
             this.showToast('导出失败', 'error');
         }
+    }
+    
+    generateReportData() {
+        const guest = window.guestSystem?.getGuestInfo() || { nickname: '匿名探索者' };
+        return {
+            title: '人格星球探索测试报告',
+            user: {
+                username: guest.nickname,
+                testDate: new Date().toISOString()
+            },
+            test: {
+                mode: this.testData?.mode || 'standard',
+                topDimensions: this.testData?.topDimensions || [],
+                scores: this.testData?.scores || {}
+            },
+            generatedAt: new Date().toISOString()
+        };
     }
     
     generatePDFContent(report) {
@@ -219,7 +222,7 @@ class ExportManager {
     </div>
     
     <div class="footer">
-        <p>本报告由「人格星球探索」生成 | https://your-site.netlify.app</p>
+        <p>本报告由「人格星球探索」生成</p>
         <p>报告生成时间：${new Date().toLocaleString()}</p>
     </div>
 </body>
@@ -228,11 +231,6 @@ class ExportManager {
     }
     
     async exportImage() {
-        if (!window.authService?.isAuthenticated()) {
-            window.permissionService?.showAuthRequired('导出功能需要登录');
-            return;
-        }
-        
         try {
             const canvas = await this.generateImageCanvas();
             if (canvas) {
@@ -244,6 +242,7 @@ class ExportManager {
                 this.showToast('导出成功', 'success');
             }
         } catch (error) {
+            console.error('导出失败:', error);
             this.showToast('导出失败', 'error');
         }
     }

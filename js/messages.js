@@ -1,20 +1,38 @@
+const MESSAGES_KEY = 'message_board_messages';
+
 class MessageBoard {
     constructor(options = {}) {
         this.container = options.container;
         this.currentUser = null;
         this.messages = [];
-        this.page = 1;
-        this.limit = 20;
-        this.hasMore = true;
-        this.loading = false;
         
         this.init();
     }
     
-    async init() {
-        this.currentUser = window.authService?.getCurrentUser();
+    init() {
+        this.currentUser = window.guestSystem?.getGuestInfo();
+        this.loadLocalMessages();
         this.render();
-        await this.loadMessages();
+    }
+    
+    loadLocalMessages() {
+        try {
+            const data = localStorage.getItem(MESSAGES_KEY);
+            if (data) {
+                this.messages = JSON.parse(data);
+            }
+        } catch (e) {
+            console.error('加载留言失败:', e);
+            this.messages = [];
+        }
+    }
+    
+    saveLocalMessages() {
+        try {
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(this.messages));
+        } catch (e) {
+            console.error('保存留言失败:', e);
+        }
     }
     
     render() {
@@ -29,64 +47,44 @@ class MessageBoard {
                 </div>
                 
                 <div class="message-form-container glass-card rounded-2xl p-6 mb-8">
-                    ${this.currentUser ? `
-                        <div class="flex items-start gap-4">
-                            <img src="${this.currentUser.avatar}" alt="avatar" class="w-12 h-12 rounded-full">
-                            <div class="flex-1">
-                                <textarea 
-                                    id="message-input" 
-                                    class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white resize-none focus:border-purple-500 focus:outline-none transition-all"
-                                    placeholder="分享你的想法、建议或故事..."
-                                    rows="4"
-                                    maxlength="500"
-                                ></textarea>
-                                <div class="flex justify-between items-center mt-3">
-                                    <span class="text-sm text-gray-500">
-                                        <span id="msg-char-count">0</span>/500
-                                    </span>
-                                    <button 
-                                        id="submit-message" 
-                                        class="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2"
-                                    >
-                                        <i class="fas fa-paper-plane"></i>
-                                        发表留言
-                                    </button>
-                                </div>
+                    <div class="flex items-start gap-4">
+                        <img src="${this.currentUser?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest'}" alt="avatar" class="w-12 h-12 rounded-full">
+                        <div class="flex-1">
+                            <textarea 
+                                id="message-input" 
+                                class="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white resize-none focus:border-purple-500 focus:outline-none transition-all"
+                                placeholder="分享你的想法、建议或故事..."
+                                rows="4"
+                                maxlength="500"
+                            ></textarea>
+                            <div class="flex justify-between items-center mt-3">
+                                <span class="text-sm text-gray-500">
+                                    <span id="msg-char-count">0</span>/500
+                                </span>
+                                <button 
+                                    id="submit-message" 
+                                    class="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-bold hover:opacity-90 transition-all disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    <i class="fas fa-paper-plane"></i>
+                                    发表留言
+                                </button>
                             </div>
                         </div>
-                    ` : `
-                        <div class="text-center py-8">
-                            <div class="text-6xl mb-4">🔒</div>
-                            <p class="text-gray-400 mb-4">登录后即可发表留言</p>
-                            <a href="auth.html" class="inline-block px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white font-bold hover:opacity-90 transition-all">
-                                立即登录
-                            </a>
-                        </div>
-                    `}
-                </div>
-                
-                <div id="messages-list" class="space-y-6">
-                    <div class="text-center py-12 text-gray-400">
-                        <i class="fas fa-spinner fa-spin text-3xl mb-3"></i>
-                        <p>加载中...</p>
                     </div>
                 </div>
                 
-                <div id="load-more-msg-container" class="text-center mt-8 hidden">
-                    <button id="load-more-msg-btn" class="px-8 py-3 glass-card rounded-xl hover:bg-white/10 transition-all font-medium">
-                        加载更多留言
-                    </button>
+                <div id="messages-list" class="space-y-6">
                 </div>
             </div>
         `;
         
+        this.renderMessages();
         this.bindEvents();
     }
     
     bindEvents() {
         const input = document.getElementById('message-input');
         const submitBtn = document.getElementById('submit-message');
-        const loadMoreBtn = document.getElementById('load-more-msg-btn');
         
         if (input) {
             input.addEventListener('input', () => {
@@ -103,39 +101,10 @@ class MessageBoard {
         if (submitBtn) {
             submitBtn.addEventListener('click', () => this.submitMessage());
         }
-        
-        if (loadMoreBtn) {
-            loadMoreBtn.addEventListener('click', () => this.loadMore());
-        }
-    }
-    
-    async loadMessages() {
-        if (this.loading) return;
-        this.loading = true;
-        
-        try {
-            const response = await window.messagesAPI.list({
-                page: this.page,
-                limit: this.limit
-            });
-            
-            if (response.success) {
-                this.messages = [...this.messages, ...response.data.data];
-                this.hasMore = response.data.pagination.page < response.data.pagination.totalPages;
-                
-                this.renderMessages();
-            }
-        } catch (error) {
-            console.error('Load messages error:', error);
-            this.showError('加载留言失败');
-        } finally {
-            this.loading = false;
-        }
     }
     
     renderMessages() {
         const list = document.getElementById('messages-list');
-        const loadMoreContainer = document.getElementById('load-more-msg-container');
         
         if (this.messages.length === 0) {
             list.innerHTML = `
@@ -148,21 +117,21 @@ class MessageBoard {
             return;
         }
         
-        list.innerHTML = this.messages.map(message => this.renderMessageItem(message)).join('');
+        const pinnedMessages = this.messages.filter(m => m.isPinned);
+        const normalMessages = this.messages.filter(m => !m.isPinned);
+        const sortedMessages = [
+            ...pinnedMessages.sort((a, b) => b.timestamp - a.timestamp),
+            ...normalMessages.sort((a, b) => b.timestamp - a.timestamp)
+        ];
         
-        if (this.hasMore) {
-            loadMoreContainer.classList.remove('hidden');
-        } else {
-            loadMoreContainer.classList.add('hidden');
-        }
+        list.innerHTML = sortedMessages.map(message => this.renderMessageItem(message)).join('');
         
         this.bindMessageEvents();
     }
     
     renderMessageItem(message) {
         const isOwner = this.currentUser && this.currentUser.id === message.userId;
-        const isAdmin = this.currentUser && this.currentUser.role === 'ADMIN';
-        const hasLiked = this.currentUser && message.likedBy?.includes(this.currentUser.id);
+        const hasLiked = message.likedBy?.includes(this.currentUser?.id);
         
         return `
             <div class="message-item glass-card rounded-2xl p-6 ${message.isPinned ? 'border-2 border-yellow-500/50' : ''}" data-id="${message.id}">
@@ -177,8 +146,9 @@ class MessageBoard {
                     <img src="${message.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${message.userId}`}" alt="avatar" class="w-12 h-12 rounded-full">
                     <div class="flex-1">
                         <div class="flex items-center gap-3 mb-2">
-                            <span class="font-bold text-lg">${message.username}</span>
-                            <span class="text-sm text-gray-500">${this.formatTime(message.createdAt)}</span>
+                            <span class="font-bold text-lg">${this.escapeHtml(message.username)}</span>
+                            ${message.isGuest ? '<span class="text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">访客</span>' : ''}
+                            <span class="text-sm text-gray-500">${this.formatTime(message.timestamp)}</span>
                         </div>
                         <p class="text-gray-300 mb-4 leading-relaxed">${this.escapeHtml(message.content)}</p>
                         
@@ -188,21 +158,13 @@ class MessageBoard {
                                 <span>${message.likes || 0}</span>
                             </button>
                             
-                            ${this.currentUser ? `
-                                <button class="msg-reply-btn text-gray-400 hover:text-purple-400 transition-colors" data-id="${message.id}">
-                                    <i class="fas fa-reply"></i> 回复
-                                </button>
-                            ` : ''}
+                            <button class="msg-reply-btn text-gray-400 hover:text-purple-400 transition-colors" data-id="${message.id}">
+                                <i class="fas fa-reply"></i> 回复
+                            </button>
                             
-                            ${isOwner || isAdmin ? `
+                            ${isOwner ? `
                                 <button class="msg-delete-btn text-gray-400 hover:text-red-400 transition-colors" data-id="${message.id}">
                                     <i class="fas fa-trash"></i> 删除
-                                </button>
-                            ` : ''}
-                            
-                            ${isAdmin ? `
-                                <button class="msg-pin-btn text-gray-400 hover:text-yellow-400 transition-colors" data-id="${message.id}" data-pinned="${message.isPinned}">
-                                    <i class="fas fa-thumbtack"></i> ${message.isPinned ? '取消置顶' : '置顶'}
                                 </button>
                             ` : ''}
                         </div>
@@ -213,8 +175,8 @@ class MessageBoard {
                                     <div class="reply-item">
                                         <div class="flex items-center gap-2 mb-1">
                                             <img src="${reply.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${reply.userId}`}" alt="avatar" class="w-6 h-6 rounded-full">
-                                            <span class="font-medium text-sm">${reply.username}</span>
-                                            <span class="text-xs text-gray-500">${this.formatTime(reply.createdAt)}</span>
+                                            <span class="font-medium text-sm">${this.escapeHtml(reply.username)}</span>
+                                            <span class="text-xs text-gray-500">${this.formatTime(reply.timestamp)}</span>
                                         </div>
                                         <p class="text-gray-400 text-sm">${this.escapeHtml(reply.content)}</p>
                                     </div>
@@ -258,10 +220,6 @@ class MessageBoard {
             btn.addEventListener('click', () => this.deleteMessage(btn.dataset.id));
         });
         
-        document.querySelectorAll('.msg-pin-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.pinMessage(btn.dataset.id, btn.dataset.pinned === 'true'));
-        });
-        
         document.querySelectorAll('.cancel-reply-btn').forEach(btn => {
             btn.addEventListener('click', () => this.hideReplyForm(btn));
         });
@@ -274,7 +232,7 @@ class MessageBoard {
         });
     }
     
-    async submitMessage() {
+    submitMessage() {
         const input = document.getElementById('message-input');
         const content = input.value.trim();
         
@@ -287,45 +245,61 @@ class MessageBoard {
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 发表中...';
         
-        try {
-            const response = await window.messagesAPI.create({ content });
-            
-            if (response.success) {
-                this.messages.unshift(response.data);
-                this.renderMessages();
-                input.value = '';
-                document.getElementById('msg-char-count').textContent = '0';
-                this.showToast('留言发表成功', 'success');
-            }
-        } catch (error) {
-            this.showToast(error.message || '发表失败', 'error');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> 发表留言';
-        }
-    }
-    
-    async likeMessage(messageId) {
-        if (!this.currentUser) {
-            window.permissionService?.showAuthRequired();
-            return;
+        const guest = window.guestSystem?.getGuestInfo();
+        
+        const newMessage = {
+            id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+            content: content,
+            userId: guest?.id || 'anonymous',
+            username: guest?.nickname || '匿名探索者',
+            avatar: guest?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=anonymous',
+            isGuest: true,
+            timestamp: Date.now(),
+            likes: 0,
+            likedBy: [],
+            isPinned: false,
+            replies: []
+        };
+        
+        this.messages.unshift(newMessage);
+        this.saveLocalMessages();
+        this.renderMessages();
+        
+        input.value = '';
+        document.getElementById('msg-char-count').textContent = '0';
+        this.showToast('留言发表成功', 'success');
+        
+        if (window.guestSystem) {
+            window.guestSystem.updateStats('messagesPosted');
         }
         
-        try {
-            const response = await window.messagesAPI.like(messageId);
-            if (response.success) {
-                const message = this.messages.find(m => m.id === messageId);
-                if (message) {
-                    message.likes = response.data.likes;
-                    message.likedBy = response.data.hasLiked 
-                        ? [...(message.likedBy || []), this.currentUser.id]
-                        : (message.likedBy || []).filter(id => id !== this.currentUser.id);
-                    this.renderMessages();
-                }
-            }
-        } catch (error) {
-            this.showToast('操作失败', 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> 发表留言';
+    }
+    
+    likeMessage(messageId) {
+        const message = this.messages.find(m => m.id === messageId);
+        if (!message) return;
+        
+        const guestId = this.currentUser?.id;
+        if (!guestId) return;
+        
+        if (!message.likedBy) {
+            message.likedBy = [];
         }
+        
+        const hasLiked = message.likedBy.includes(guestId);
+        
+        if (hasLiked) {
+            message.likedBy = message.likedBy.filter(id => id !== guestId);
+            message.likes = Math.max(0, (message.likes || 0) - 1);
+        } else {
+            message.likedBy.push(guestId);
+            message.likes = (message.likes || 0) + 1;
+        }
+        
+        this.saveLocalMessages();
+        this.renderMessages();
     }
     
     showReplyForm(messageId) {
@@ -351,62 +325,43 @@ class MessageBoard {
         });
     }
     
-    async submitReply(messageId, content) {
+    submitReply(messageId, content) {
         if (!content.trim()) {
             this.showToast('请输入回复内容', 'error');
             return;
         }
         
-        try {
-            const response = await window.messagesAPI.addReply(messageId, { content });
-            if (response.success) {
-                const message = this.messages.find(m => m.id === messageId);
-                if (message) {
-                    message.replies = message.replies || [];
-                    message.replies.push(response.data);
-                    this.renderMessages();
-                    this.showToast('回复成功', 'success');
-                }
-            }
-        } catch (error) {
-            this.showToast(error.message || '回复失败', 'error');
+        const message = this.messages.find(m => m.id === messageId);
+        if (!message) return;
+        
+        const guest = window.guestSystem?.getGuestInfo();
+        
+        const reply = {
+            id: 'reply_' + Date.now(),
+            content: content.trim(),
+            userId: guest?.id || 'anonymous',
+            username: guest?.nickname || '匿名探索者',
+            avatar: guest?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=anonymous',
+            timestamp: Date.now()
+        };
+        
+        if (!message.replies) {
+            message.replies = [];
         }
+        message.replies.push(reply);
+        
+        this.saveLocalMessages();
+        this.renderMessages();
+        this.showToast('回复成功', 'success');
     }
     
-    async deleteMessage(messageId) {
+    deleteMessage(messageId) {
         if (!confirm('确定要删除这条留言吗？')) return;
         
-        try {
-            const response = await window.messagesAPI.delete(messageId);
-            if (response.success) {
-                this.messages = this.messages.filter(m => m.id !== messageId);
-                this.renderMessages();
-                this.showToast('删除成功', 'success');
-            }
-        } catch (error) {
-            this.showToast('删除失败', 'error');
-        }
-    }
-    
-    async pinMessage(messageId, isPinned) {
-        try {
-            const response = await window.messagesAPI.pin(messageId);
-            if (response.success) {
-                const message = this.messages.find(m => m.id === messageId);
-                if (message) {
-                    message.isPinned = !isPinned;
-                    this.renderMessages();
-                    this.showToast(isPinned ? '已取消置顶' : '已置顶', 'success');
-                }
-            }
-        } catch (error) {
-            this.showToast('操作失败', 'error');
-        }
-    }
-    
-    async loadMore() {
-        this.page++;
-        await this.loadMessages();
+        this.messages = this.messages.filter(m => m.id !== messageId);
+        this.saveLocalMessages();
+        this.renderMessages();
+        this.showToast('删除成功', 'success');
     }
     
     formatTime(timestamp) {
@@ -445,15 +400,6 @@ class MessageBoard {
             toast.classList.add('animate__fadeOutRight');
             setTimeout(() => toast.remove(), 500);
         }, 2000);
-    }
-    
-    showError(message) {
-        document.getElementById('messages-list').innerHTML = `
-            <div class="text-center py-12 text-red-400">
-                <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
-                <p>${message}</p>
-            </div>
-        `;
     }
 }
 
